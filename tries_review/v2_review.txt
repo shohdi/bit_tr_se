@@ -1,0 +1,11 @@
+1 - reward number of bits  (done)
+2 - send reward with done only (need test)
+3 - add reward to input
+4 - update actions to be all 192 bits
+5 - make experiene save and load
+6 - change address of wallet in all app   (Done)
+7 - epsilon will change on 20000000 (done)
+8 - make sample only the actions taken , hashed header and reward returned
+9 - make the input 10 samples stacked together (this means (10 ,state_size)) (need test)
+10 - use rnn model
+11 - add a way to test the model every 10000 steps
