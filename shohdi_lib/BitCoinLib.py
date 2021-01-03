@@ -491,7 +491,7 @@ class BitCoinLib:
     def calculateMerkleRoot(self,block_template, coinbase_message,  address,extranonce):
         #(state,reward,mined_block)
         # Add an empty coinbase transaction to the block template transactions
-        self.last_header = None
+        #self.last_header = None
         block_template['transactions'][0] = {}
         coinbase_tx = block_template['transactions'][0]
 
@@ -514,12 +514,14 @@ class BitCoinLib:
 
         # Recompute the block hash
         block_hash = self.block_compute_raw_hash(block_header)
-
+        foundBetter = False
         if self.last_header is None or block_hash < self.last_header:
             self.last_header = block_hash
-            print("block_header : {} length {}".format(block_header,len(block_header)))
+            print("block_header : {} length {}".format(block_header.hex(),len(block_header)))
             print("found better score {} length {}".format(self.last_header.hex(),len(self.last_header)))
             print("target to match    {} length {}".format(target_hash.hex(),len(target_hash)))
+            print("nonce : ",nonce)
+            foundBetter = True
         
         #(state,reward) = self.generateRet(block_header,block_hash,target_hash,nonce,extranonce,address)
         # Check if it the block meets the target hash
@@ -527,9 +529,9 @@ class BitCoinLib:
             block_template['nonce'] = nonce
             block_template['hash'] = block_hash.hex()
 
-            return block_template
+            return block_template,block_hash,foundBetter
         
-        return None
+        return None,block_hash,foundBetter
 
 
     def createHeaderHash(self,block_template, coinbase_message,  address,extranonce,nonce):

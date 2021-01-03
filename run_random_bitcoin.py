@@ -4,6 +4,8 @@ import time as ts
 
 
 
+
+
 def main():
     while True :
         try:
@@ -13,15 +15,31 @@ def main():
             coinbase_message = "Thanks allah for all this money".encode().hex()
             block_template = lib.rpc_getblocktemplate()
             height = block_template['height']
-            extranonce = np.random.randint(0xffffffff)
-
-            block_template,target_hash,extranonce,address,block_header = lib.calculateMerkleRoot(block_template,coinbase_message,address,extranonce)
-
+            
+            
             test_height = lib.rpc("getblockcount")
             start_time = ts.time()
-            for i in range(0xffffffff):
-                nonce = i
-                mined_block = lib.createBlockHeader(block_template,block_header,nonce,target_hash)
+            extranonceArr = np.zeros(96,dtype=np.float32)
+            nonce = np.random.randint(0xffffffff)
+
+            lib.last_header = None
+            for i in  range(0xffffffffffffffffffffffff):
+                
+
+                
+
+                extranonce = i #np.random.randint(0xffffffff)
+
+                block_template,target_hash,extranonce,address,block_header = lib.calculateMerkleRoot(block_template,coinbase_message,address,extranonce)
+
+
+            
+                
+                mined_block,_,foundBetter = lib.createBlockHeader(block_template,block_header,nonce,target_hash)
+                if(foundBetter):
+                    print ("extranonce " , extranonce)
+                
+
                 if (mined_block is not None):
                     print('solved !')
                     
@@ -35,7 +53,7 @@ def main():
                     break
 
 
-                if(nonce % (10 ** 6) == 0):
+                if(extranonce % (10 ** 6) == 0):
                     test_height = lib.rpc("getblockcount")
                     if(test_height >= height):
                         
@@ -47,7 +65,12 @@ def main():
                     current_time = ts.time()
                     f_s = i/((current_time-start_time) * 1000 * 1000 )
                     print('hash rate : ',f_s,' MHash/s')
-                    
+
+
+            
+            
+
+
         except Exception as e:
             print(e)
             
