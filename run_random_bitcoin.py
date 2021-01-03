@@ -15,13 +15,13 @@ def main():
             height = block_template['height']
             extranonce = np.random.randint(0xffffffff)
 
-            block_template,target_hash,extranonce,address,block_header = lib.calculateMerkleRoot(block_template,coinbase_message,address,extranonce,0)
+            block_template,target_hash,extranonce,address,block_header = lib.calculateMerkleRoot(block_template,coinbase_message,address,extranonce)
 
             test_height = lib.rpc("getblockcount")
             start_time = ts.time()
             for i in range(0xffffffff):
                 nonce = i
-                state,reward,mined_block = lib.createBlockHeader(block_template,block_header,nonce,target_hash,extranonce,address)
+                mined_block = lib.createBlockHeader(block_template,block_header,nonce,target_hash)
                 if (mined_block is not None):
                     print('solved !')
                     

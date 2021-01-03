@@ -488,7 +488,7 @@ class BitCoinLib:
         return block_hash
 
     
-    def calculateMerkleRoot(self,block_template, coinbase_message,  address,extranonce,nonce):
+    def calculateMerkleRoot(self,block_template, coinbase_message,  address,extranonce):
         #(state,reward,mined_block)
         # Add an empty coinbase transaction to the block template transactions
         self.last_header = None
@@ -507,7 +507,7 @@ class BitCoinLib:
         return block_template,target_hash,extranonce,address,block_header
 
 
-    def createBlockHeader(self,block_template,block_header,nonce,target_hash,extranonce,address):
+    def createBlockHeader(self,block_template,block_header,nonce,target_hash):
         # Reform the block header
         
         block_header = block_header[0:76] + nonce.to_bytes(4, byteorder='little')
@@ -520,16 +520,22 @@ class BitCoinLib:
             print("block_header : {} length {}".format(block_header,len(block_header)))
             print("found better score {} length {}".format(self.last_header.hex(),len(self.last_header)))
             print("target to match    {} length {}".format(target_hash.hex(),len(target_hash)))
-        state , reward = None,None
+        
         #(state,reward) = self.generateRet(block_header,block_hash,target_hash,nonce,extranonce,address)
         # Check if it the block meets the target hash
         if block_hash <= target_hash:
             block_template['nonce'] = nonce
             block_template['hash'] = block_hash.hex()
 
-            return (state,reward,block_template)
+            return block_template
         
-        return (state,reward,None)
+        return None
+
+
+    def createHeaderHash(self,block_template, coinbase_message,  address,extranonce,nonce):
+        block_template,target_hash,extranonce,address,block_header  = self.calculateMerkleRoot(block_template, coinbase_message,  address,extranonce)
+
+
 
     def calculateHeaderHash(self,block_template, coinbase_message,  address,extranonce,nonce):
         #(state,reward,mined_block)
