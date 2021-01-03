@@ -497,7 +497,7 @@ class BitCoinLib:
 
         # Compute the target hash
         target_hash = self.block_bits2target(block_template['bits'])
-        coinbase_script = coinbase_message + self.int2lehex(extranonce, 4)
+        coinbase_script = coinbase_message + self.int2lehex(extranonce, 12)
         coinbase_tx['data'] = self.tx_make_coinbase(coinbase_script, address, block_template['coinbasevalue'], block_template['height'])
         coinbase_tx['hash'] = self.tx_compute_hash(coinbase_tx['data'])
 
@@ -505,6 +505,31 @@ class BitCoinLib:
         block_template['merkleroot'] = self.tx_compute_merkle_root([tx['hash'] for tx in block_template['transactions']])
         block_header = self.block_make_header(block_template)
         return block_template,target_hash,extranonce,address,block_header
+
+
+    def createBlockHeader(self,block_template,block_header,nonce,target_hash,extranonce,address):
+        # Reform the block header
+        
+        block_header = block_header[0:76] + nonce.to_bytes(4, byteorder='little')
+
+        # Recompute the block hash
+        block_hash = self.block_compute_raw_hash(block_header)
+
+        if self.last_header is None or block_hash < self.last_header:
+            self.last_header = block_hash
+            print("block_header : {} length {}".format(block_header,len(block_header)))
+            print("found better score {} length {}".format(self.last_header.hex(),len(self.last_header)))
+            print("target to match    {} length {}".format(target_hash.hex(),len(target_hash)))
+        state , reward = None,None
+        #(state,reward) = self.generateRet(block_header,block_hash,target_hash,nonce,extranonce,address)
+        # Check if it the block meets the target hash
+        if block_hash <= target_hash:
+            block_template['nonce'] = nonce
+            block_template['hash'] = block_hash.hex()
+
+            return (state,reward,block_template)
+        
+        return (state,reward,None)
 
     def calculateHeaderHash(self,block_template, coinbase_message,  address,extranonce,nonce):
         #(state,reward,mined_block)
@@ -515,7 +540,7 @@ class BitCoinLib:
 
         # Compute the target hash
         target_hash = self.block_bits2target(block_template['bits'])
-        coinbase_script = coinbase_message + self.int2lehex(extranonce, 4)
+        coinbase_script = coinbase_message + self.int2lehex(extranonce, 12)
         coinbase_tx['data'] = self.tx_make_coinbase(coinbase_script, address, block_template['coinbasevalue'], block_template['height'])
         coinbase_tx['hash'] = self.tx_compute_hash(coinbase_tx['data'])
 
@@ -545,29 +570,7 @@ class BitCoinLib:
         
         return (state,reward,None)
     
-    def createBlockHeader(self,block_template,block_header,nonce,target_hash,extranonce,address):
-        # Reform the block header
-        
-        block_header = block_header[0:76] + nonce.to_bytes(4, byteorder='little')
 
-        # Recompute the block hash
-        block_hash = self.block_compute_raw_hash(block_header)
-
-        if self.last_header is None or block_hash < self.last_header:
-            self.last_header = block_hash
-            print("block_header : {} length {}".format(block_header,len(block_header)))
-            print("found better score {} length {}".format(self.last_header.hex(),len(self.last_header)))
-            print("target to match    {} length {}".format(target_hash.hex(),len(target_hash)))
-        state , reward = None,None
-        #(state,reward) = self.generateRet(block_header,block_hash,target_hash,nonce,extranonce,address)
-        # Check if it the block meets the target hash
-        if block_hash <= target_hash:
-            block_template['nonce'] = nonce
-            block_template['hash'] = block_hash.hex()
-
-            return (state,reward,block_template)
-        
-        return (state,reward,None)
 
     
     def getNumpyArrayFromEncoded(self,encodedString):
