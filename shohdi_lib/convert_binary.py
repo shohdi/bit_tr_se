@@ -5,7 +5,7 @@ class convert_binary:
         b = bin(number)
         b = b[2:]
         #print(b)
-        arr = np.zeros((len(b),),dtype=float)
+        arr = np.zeros((len(b),),dtype=np.float32)
         for i in range(len(b)):
             arr[i] = float(b[i])
         return arr
@@ -46,7 +46,7 @@ class convert_binary:
             while len(b) < 8:
                 b = '0' + b
             new = new + b
-        arr = np.zeros((len(new),),dtype=float)
+        arr = np.zeros((len(new),),dtype=np.float32)
         for i in range(len(new)):
             arr[i] = float(new[i])
         return arr
