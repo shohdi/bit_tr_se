@@ -31,10 +31,11 @@ def main():
             historyArrOutput = collections.deque([],maxlen=10000000)
             while True:
                 i += 1
-                extranonceArr = np.zeros(96,dtype=np.float32)
+                extranonceArr = np.floor(np.random.rand((96) ) * 2.0,dtype=np.float32)
+                '''
                 for index in range(len(extranonceArr)):
                     extranonceArr[index] = np.random.randint(2)
-                
+                '''
                 extranonce = lib.converter.fromBinToInt(extranonceArr)
            
 
@@ -49,8 +50,10 @@ def main():
                 historyArrOutput.append(extranonceArr)
 
                 if(foundBetter):
-                    print ("extranonce " , extranonce)
+                    print ("count ",i," extranonce " , extranonce)
                 
+                if(i%1000 == 0):
+                    print('count ' , i)
 
                 if (mined_block is not None):
                     #write file as a prove to solve
@@ -71,6 +74,15 @@ def main():
                     break
 
 
+                if(len(historyArrInput) >= 10000 and (i % 1000 == 0)):
+                    #train model here
+                    nphistoryArrInput = np.array(historyArrInput,dtype=np.float32,copy=False)
+                    nphistoryArrOutput = np.array(historyArrOutput,dtype=np.float32,copy=False)
+                    print(nphistoryArrInput.shape)
+                    print(nphistoryArrOutput.shape)
+
+
+                '''
                 if(extranonce % (10 ** 6) == 0):
                     test_height = lib.rpc("getblockcount")
                     if(test_height >= height):
@@ -83,6 +95,7 @@ def main():
                     current_time = ts.time()
                     f_s = i/((current_time-start_time) * 1000 * 1000 )
                     print('hash rate : ',f_s,' MHash/s')
+                '''
 
 
             
