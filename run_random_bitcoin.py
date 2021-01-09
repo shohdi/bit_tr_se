@@ -3,6 +3,7 @@ import numpy as np
 import time as ts
 from shohdi_lib.convert_binary import convert_binary
 import collections
+import os
 
 
 
@@ -52,15 +53,21 @@ def main():
                 
 
                 if (mined_block is not None):
+                    #write file as a prove to solve
+                    myfile = open('output_txt' + os.sep +   str(ts.time())+'.txt','a')
+                    myfile.write(ts.ctime() + '\r\n')
+                    myfile.write('solved !'+ '\r\n')
                     print('solved !')
                     
                     submission = lib.block_make_submit(mined_block)
                     response = lib.rpc_submitblock(submission)
                     if response is not None:
-                    
+                        myfile.write("Submission Error: {}".format(response) + '\r\n')
                         print("Submission Error: {}".format(response))
                     else:
+                        myfile.write('Submitted ! ' + 'to ' + address + '\r\n')
                         print('Submitted ! ')
+                    myfile.close()
                     break
 
 
